@@ -1,4 +1,8 @@
 # Dec_1st_week_codes
+<hr>
+
+![Test](https://github.com/hdmtp-s-basement/Dec_1st_week_codes/actions/workflows/main.yml/badge.svg)
+
 <br>
 
 Time      | Score
