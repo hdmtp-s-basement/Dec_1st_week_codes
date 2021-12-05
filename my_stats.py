@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from github_contributions import GithubUser
 from datetime import datetime, date
 import pytz
