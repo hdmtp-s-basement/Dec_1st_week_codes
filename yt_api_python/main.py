@@ -51,6 +51,8 @@ def print_comments(response):
         #replycount = item['snippet']['totalReplyCount']
         print(f"{user} = {comment}", end="\n\n\n")
 
+        # break # just to fetch the very first comment
+
 
 print_comments(response)
 
@@ -59,4 +61,5 @@ Resources:
 1. https://www.geeksforgeeks.org/how-to-extract-youtube-comments-using-youtube-api-python/
 2. https://developers.google.com/youtube/v3/docs/commentThreads/list
 3. https://github.com/googleapis/google-api-python-client/blob/main/docs/start.md
+PLEASE NOTICE DONT USE FUNCTION(here print_comments()) or ur nextPageToken will not update and only 50 comments are gonna print. use `While True`(example: look at walter_bergmann.py)
 '''
