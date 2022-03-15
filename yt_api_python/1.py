@@ -35,34 +35,51 @@ def video_id(url):
         return pth[-1]
 
 
-url = str(input("enter youtube vdo url: "))
+# url = str(input("enter youtube vdo url: "))
+url = "https://www.youtube.com/watch?v=8b_ZAM5qUdU&list=PLr2jljBBtVJ-cnlB3fUW7IFQjr7s_3qvk&index=2"
+# url = "https://www.youtube.com/watch?v=5HBKmgzfKD8"
 
 #print(response, end="\n\n\n")
 
-request2 = youtube.commentThreads().list(
-    part="snippet,replies",
-    videoId=f"{video_id(url)}",
-    maxResults=101
-)
+def get_cmt_threads(youtube):
+    request2 = youtube.commentThreads().list(
+        part="snippet,replies",
+        videoId=f"{video_id(url)}",
+        maxResults=101,
+        pageToken=nextPageToken
+    )
 
-response = request2.execute()
-i = 1
-while response:
+    response = request2.execute()
+    return response
+
+# while response:
+def load_comments(response):
     for item in response["items"]:
         comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
         user = item['snippet']['topLevelComment']['snippet']['authorDisplayName']
-        print(f"{i}:    {user} = {comment}", end="\n\n\n")
+        print(f"{user} = {comment}", end="\n\n\n")
         replycount = item['snippet']['totalReplyCount']
         if replycount >= 1:
-            # print(f"\t\t{replycount}")
             for reply in item['replies']['comments']:
                 reply_user = str(reply['snippet']['authorDisplayName'])
                 reply = reply['snippet']['textDisplay']
                 print(f"\t\t{reply_user} = {reply}\n")
 
-        i += 1
-        # break # just to fetch the very first comment
-    break
+
+
+response = get_cmt_threads(youtube)
+next_page_token = response['nextPageToken']
+load_comments(response)
+
+try:
+    while next_page_token:
+        response = get_cmt_threads(youtube)
+        next_page_token = response['nextPageToken']
+        load_comments(response)
+except KeyError:
+    response = get_cmt_threads(youtube)
+    load_comments(response)
+
     
 
 

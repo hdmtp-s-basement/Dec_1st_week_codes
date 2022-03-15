@@ -3,6 +3,7 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from urllib.parse import urlparse, parse_qs
+# import sys
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -42,24 +43,12 @@ def playlist_id(url):
     
         
 
-url = str(input("enter youtube vdo url: "))
-
-# request2 = youtube.commentThreads().list(
-    # part="snippet",
-    # videoId=f"{video_id(url)}",
-    # maxResults=50
-# )
-
-# response = request2.execute()
+# url = str(input("enter youtube vdo url: "))
+url = "https://youtube.com/playlist?list=PLr2jljBBtVJ-cnlB3fUW7IFQjr7s_3qvk"
+# url = str(sys.argv[1])
 
 
-# def print_comments(response):
-    # for item in response["items"]:
-        # comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-        # user = item['snippet']['topLevelComment']['snippet']['authorDisplayName']
-        # if user == "Walter Bergmann":
-            # print(f"{comment}")
-
+vdo_ids = []
 while True:
     request3 = youtube.playlistItems().list(
         part="snippet",
@@ -70,7 +59,7 @@ while True:
     response2 = request3.execute()
     
     for item in response2['items']:
-            print(item)
+            # print(item)
             '''
             thumbnails = item['snippet']['thumbnails']
   
@@ -82,9 +71,49 @@ while True:
             print("\n")
 
             '''
+            position = item['snippet']['position']
+            owner_name = item['snippet']['videoOwnerChannelTitle']
+            vdo_ids.append(item['snippet']['resourceId']['videoId'])
+            
     nextPageToken = response2.get('nextPageToken')
     if not nextPageToken:
-        # print("No nextPageToken!\n\n")
         break
+
+# print(vdo_ids)
+i = 0
+nextPageToken = None
+# comments = []
+while True:
+    if i <= len(vdo_ids):
+        if i == len(vdo_ids):
+            break
+        request2 = youtube.commentThreads().list(
+            part="snippet, replies",
+            videoId=f"{vdo_ids[i]}",
+            maxResults=100,
+            pageToken=nextPageToken
+        )
+        response = request2.execute()
+    
+        for item in response["items"]:
+            comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
+            user = item['snippet']['topLevelComment']['snippet']['authorDisplayName']
+            if user == owner_name:
+                print(f"\n{i}:   {comment}\n\n")
+                # comments.append(comment)
+            replycount = item['snippet']['totalReplyCount']
+            if replycount >= 1:
+                # print(f"\t\t{replycount}")
+                for reply in item['replies']['comments']:
+                    reply_user = str(reply['snippet']['authorDisplayName'])
+                    if reply_user == owner_name:
+                        reply = reply['snippet']['textDisplay']
+                        print(f"\t\t\t{reply}\n")
+
+        i += 1
+
+# print([i for i in comments])
+# for c in comments:
+    # print(f"{c}\n")
 
 # https://www.youtube.com/watch?v=HVf67CCJVYQ&list=UUN7Q4MfUn9gb9AKYaWPPBPg
