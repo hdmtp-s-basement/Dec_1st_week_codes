@@ -41,12 +41,8 @@ def playlist_id(url):
     if pth:
         return pth[-1]
     
-        
 
-# url = str(input("enter youtube vdo url: "))
-url = "https://youtube.com/playlist?list=PLr2jljBBtVJ-cnlB3fUW7IFQjr7s_3qvk"
-# url = str(sys.argv[1])
-
+url = "https://youtube.com/playlist?list=PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL"
 
 vdo_ids = []
 while True:
@@ -59,18 +55,6 @@ while True:
     response2 = request3.execute()
     
     for item in response2['items']:
-            # print(item)
-            '''
-            thumbnails = item['snippet']['thumbnails']
-  
-            if 'maxres' in thumbnails:
-                maxres = thumbnails['maxres']
-                print(maxres)
-                i += 1
-                
-            print("\n")
-
-            '''
             position = item['snippet']['position']
             owner_name = item['snippet']['videoOwnerChannelTitle']
             vdo_ids.append(item['snippet']['resourceId']['videoId'])
@@ -79,41 +63,5 @@ while True:
     if not nextPageToken:
         break
 
-# print(vdo_ids)
-i = 0
-nextPageToken = None
-# comments = []
-while True:
-    if i <= len(vdo_ids):
-        if i == len(vdo_ids):
-            break
-        request2 = youtube.commentThreads().list(
-            part="snippet, replies",
-            videoId=f"{vdo_ids[i]}",
-            maxResults=100,
-            pageToken=nextPageToken
-        )
-        response = request2.execute()
-    
-        for item in response["items"]:
-            comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
-            user = item['snippet']['topLevelComment']['snippet']['authorDisplayName']
-            if user == owner_name:
-                print(f"\n{i}:   {comment}\n\n")
-                # comments.append(comment)
-            replycount = item['snippet']['totalReplyCount']
-            if replycount >= 1:
-                # print(f"\t\t{replycount}")
-                for reply in item['replies']['comments']:
-                    reply_user = str(reply['snippet']['authorDisplayName'])
-                    if reply_user == owner_name:
-                        reply = reply['snippet']['textDisplay']
-                        print(f"\t\t\t{reply}\n")
-
-        i += 1
-
-# print([i for i in comments])
-# for c in comments:
-    # print(f"{c}\n")
 
 # https://www.youtube.com/watch?v=HVf67CCJVYQ&list=UUN7Q4MfUn9gb9AKYaWPPBPg
