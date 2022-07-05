@@ -1,9 +1,9 @@
+
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from urllib.parse import urlparse, parse_qs
-# import sys
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -41,8 +41,11 @@ def playlist_id(url):
     if pth:
         return pth[-1]
     
+        
 
-url = "https://youtube.com/playlist?list=PLu0W_9lII9agpFUAlPFe_VNSlXW5uE0YL"
+url = "https://www.youtube.com/watch?v=HVf67CCJVYQ&list=UUN7Q4MfUn9gb9AKYaWPPBPg"
+
+print("<ul>")
 
 vdo_ids = []
 while True:
@@ -63,5 +66,32 @@ while True:
     if not nextPageToken:
         break
 
+i = 0
+j = 1
+while True:
+    if i <= len(vdo_ids):
+        if i == len(vdo_ids):
+            break
+        request2 = youtube.commentThreads().list(
+            part="snippet",
+            videoId=f"{vdo_ids[i]}",
+            maxResults=50
+        )
+        try:
+            response = request2.execute()
+        
+            for item in response["items"]:
+                comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
+                user = item['snippet']['topLevelComment']['snippet']['authorDisplayName']
+                if user == owner_name:
+                    if len(comment) >= 100:
+                        print(f"<li>{j}."+" <a href=\"https://youtu.be/"+f"{vdo_ids[i]}"+"\""+"target=\"_blank\">" + f"{vdo_ids[i]}"+"</a> ::\n\n"+f"{comment}</li><br><br>")
+                        j += 1
+                
+        except:
+            pass
 
+        i += 1
+
+print("</ul>\n</body>\n</html>")
 # https://www.youtube.com/watch?v=HVf67CCJVYQ&list=UUN7Q4MfUn9gb9AKYaWPPBPg
